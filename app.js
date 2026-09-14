@@ -23,6 +23,100 @@ $('#cartBtn')?.addEventListener('click',openDrawer);$('#loginBtn')?.addEventList
 document.querySelectorAll('.filter').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');state.category=b.dataset.cat;renderProducts()}));
 fetch('/api/products').then(r=>r.json()).then(d=>{state.products=d;setupMarketplaceTools();renderProducts();renderCart()}).catch(()=>{state.products=[];setupMarketplaceTools();renderProducts();renderCart()});
 // CREATOR DASHBOARD V3
+// VELVETDROP CREATOR DASHBOARD
+function creatorApply(){
+  showModal(`
+    <div class="modal">
+      <div class="eyebrow">CREATOR DASHBOARD</div>
+      <h2>Creator központ</h2>
+      <p class="muted">Itt tudod kezelni a saját termékeidet.</p>
+
+      <div class="steps" style="margin:20px 0">
+        <div>
+          <b>0</b>
+          <p class="muted">Termék</p>
+        </div>
+        <div>
+          <b>0</b>
+          <p class="muted">Eladás</p>
+        </div>
+        <div>
+          <b>€0</b>
+          <p class="muted">Bevétel</p>
+        </div>
+      </div>
+
+      <button class="primary big full" onclick="newCreatorProduct()">
+        + Új termék
+      </button>
+
+      <button class="ghost big full" style="margin-top:10px"
+        onclick="closeModal()">
+        Bezárás
+      </button>
+    </div>
+  `);
+}
+
+function newCreatorProduct(){
+  showModal(`
+    <div class="modal">
+      <div class="eyebrow">ÚJ TERMÉK</div>
+      <h2>Termék hozzáadása</h2>
+
+      <form class="form" id="newProductForm">
+        <label>Termék neve</label>
+        <input name="title" required placeholder="Pl. Limited Drop">
+
+        <label>Ár (€)</label>
+        <input name="price" type="number" min="1" step="0.01" required>
+
+        <label>Készlet (db)</label>
+        <input name="stock" type="number" min="1" required>
+
+        <label>Kategória</label>
+        <select name="category">
+          <option>Ruházat</option>
+          <option>Kiegészítő</option>
+          <option>Lifestyle</option>
+          <option>Egyéb</option>
+        </select>
+
+        <button class="primary big full">
+          Termék létrehozása
+        </button>
+      </form>
+    </div>
+  `);
+
+  document.querySelector('#newProductForm').onsubmit=function(e){
+    e.preventDefault();
+
+    const f=new FormData(e.target);
+
+    const product={
+      id:Date.now(),
+      title:f.get('title'),
+      price:Number(f.get('price')),
+      stock:Number(f.get('stock')),
+      category:f.get('category')
+    };
+
+    const products=JSON.parse(
+      localStorage.getItem('vd_creator_products')||'[]'
+    );
+
+    products.push(product);
+
+    localStorage.setItem(
+      'vd_creator_products',
+      JSON.stringify(products)
+    );
+
+    closeModal();
+    toast('Termék létrehozva!');
+  };
+}
 function openCreatorDashboard(){
   alert("Creator Dashboard V3 hamarosan elérhető.");
 }
