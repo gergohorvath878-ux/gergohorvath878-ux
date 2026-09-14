@@ -118,5 +118,61 @@ function newCreatorProduct(){
   };
 }
 function openCreatorDashboard(){
-  alert("Creator Dashboard V3 hamarosan elérhető.");
+  const products=JSON.parse(
+    localStorage.getItem('vd_creator_products')||'[]'
+  );
+
+  showModal(`
+    <div class="modal">
+      <div class="eyebrow">VELVETDROP CREATOR</div>
+      <h2>Creator Dashboard</h2>
+      <p class="muted">
+        Kezeld itt a saját termékeidet.
+      </p>
+
+      <div class="steps" style="margin:20px 0">
+        <div>
+          <b>${products.length}</b>
+          <p class="muted">Termék</p>
+        </div>
+        <div>
+          <b>0</b>
+          <p class="muted">Eladás</p>
+        </div>
+        <div>
+          <b>€0</b>
+          <p class="muted">Bevétel</p>
+        </div>
+      </div>
+
+      <button class="primary big full"
+        onclick="newCreatorProduct()">
+        + Új termék
+      </button>
+
+      <div style="margin-top:20px">
+        ${
+          products.length
+          ? products.map(p=>`
+            <div class="cartRow">
+              <div style="flex:1">
+                <b>${p.title}</b>
+                <div class="meta">
+                  ${p.category} · €${Number(p.price).toFixed(2)}
+                  · ${p.stock} db
+                </div>
+              </div>
+            </div>
+          `).join('')
+          : '<p class="muted">Még nincs saját terméked.</p>'
+        }
+      </div>
+
+      <button class="ghost big full"
+        style="margin-top:15px"
+        onclick="closeModal()">
+        Bezárás
+      </button>
+    </div>
+  `);
 }
