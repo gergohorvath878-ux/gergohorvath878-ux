@@ -22,3 +22,7 @@ $('#enter')?.addEventListener('click',()=>{localStorage.setItem('vd_age','1');$(
 $('#cartBtn')?.addEventListener('click',openDrawer);$('#loginBtn')?.addEventListener('click',login);$('#creatorBtn')?.addEventListener('click',creatorApply);
 document.querySelectorAll('.filter').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');state.category=b.dataset.cat;renderProducts()}));
 fetch('/api/products').then(r=>r.json()).then(d=>{state.products=d;setupMarketplaceTools();renderProducts();renderCart()}).catch(()=>{state.products=[];setupMarketplaceTools();renderProducts();renderCart()});
+// CREATOR DASHBOARD V3
+function openCreatorDashboard(){
+  alert("Creator Dashboard V3 hamarosan elérhető.");
+}
