@@ -83,8 +83,9 @@ function newCreatorProduct(){
       JSON.stringify(products)
     );
 
-    closeModal();
-    toast('Termék létrehozva!');
+   closeModal();
+toast('Termék létrehozva!');
+setTimeout(()=>openCreatorDashboard(),300);
   };
 }
 function openCreatorDashboard(){
