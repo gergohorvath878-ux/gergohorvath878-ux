@@ -25,37 +25,7 @@ fetch('/api/products').then(r=>r.json()).then(d=>{state.products=d;setupMarketpl
 // CREATOR DASHBOARD V3
 // VELVETDROP CREATOR DASHBOARD
 function creatorApply(){
-  showModal(`
-    <div class="modal">
-      <div class="eyebrow">CREATOR DASHBOARD</div>
-      <h2>Creator központ</h2>
-      <p class="muted">Itt tudod kezelni a saját termékeidet.</p>
-
-      <div class="steps" style="margin:20px 0">
-        <div>
-          <b>0</b>
-          <p class="muted">Termék</p>
-        </div>
-        <div>
-          <b>0</b>
-          <p class="muted">Eladás</p>
-        </div>
-        <div>
-          <b>€0</b>
-          <p class="muted">Bevétel</p>
-        </div>
-      </div>
-
-      <button class="primary big full" onclick="newCreatorProduct()">
-        + Új termék
-      </button>
-
-      <button class="ghost big full" style="margin-top:10px"
-        onclick="closeModal()">
-        Bezárás
-      </button>
-    </div>
-  `);
+  openCreatorDashboard();
 }
 
 function newCreatorProduct(){
