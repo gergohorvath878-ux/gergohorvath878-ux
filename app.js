@@ -94,56 +94,193 @@ function openCreatorDashboard(){
   );
 
   showModal(`
-    <div class="modal">
-      <div class="eyebrow">VELVETDROP CREATOR</div>
-      <h2>Creator Dashboard</h2>
-      <p class="muted">
-        Kezeld itt a saját termékeidet.
-      </p>
-
-      <div class="steps" style="margin:20px 0">
-        <div>
-          <b>${products.length}</b>
-          <p class="muted">Termék</p>
-        </div>
-        <div>
-          <b>0</b>
-          <p class="muted">Eladás</p>
-        </div>
-        <div>
-          <b>€0</b>
-          <p class="muted">Bevétel</p>
-        </div>
+    <div class="modal-head">
+      <div>
+        <div class="eyebrow">CREATOR DASHBOARD</div>
+        <h2>Saját termékeim</h2>
       </div>
+      <button class="icon-btn" onclick="closeModal()">✕</button>
+    </div>
 
-      <button class="primary big full"
-        onclick="newCreatorProduct()">
-        + Új termék
-      </button>
+    <div class="creator-stats">
+      <div class="stat">
+        <strong>${products.length}</strong>
+        <span>Termék</span>
+      </div>
+      <div class="stat">
+        <strong>${products.filter(p=>p.published!==false).length}</strong>
+        <span>Publikált</span>
+      </div>
+      <div class="stat">
+        <strong>€0</strong>
+        <span>Bevétel</span>
+      </div>
+    </div>
 
-      <div style="margin-top:20px">
-        ${
-          products.length
-          ? products.map(p=>`
-            <div class="cartRow">
-              <div style="flex:1">
-                <b>${p.title}</b>
-                <div class="meta">
-                  ${p.category} · €${Number(p.price).toFixed(2)}
-                  · ${p.stock} db
-                </div>
-              </div>
+    <button class="primary-btn" onclick="newCreatorProduct()">
+      + Új termék
+    </button>
+
+    <div class="creator-products">
+      ${
+        products.length
+        ? products.map(p=>`
+          <div class="creator-product">
+            <div>
+              <strong>${p.title}</strong>
+              <div>€${Number(p.price).toFixed(2)} · ${p.stock} db</div>
+              <small>
+                ${p.published!==false ? '🟢 Publikált' : '⚪ Rejtett'}
+              </small>
             </div>
-          `).join('')
-          : '<p class="muted">Még nincs saját terméked.</p>'
-        }
-      </div>
 
-      <button class="ghost big full"
-        style="margin-top:15px"
-        onclick="closeModal()">
-        Bezárás
-      </button>
+            <div class="creator-product-actions">
+              <button onclick="editCreatorProduct(${p.id})">
+                Szerkesztés
+              </button>
+
+              <button onclick="toggleCreatorProduct(${p.id})">
+                ${p.published!==false ? 'Elrejtés' : 'Publikálás'}
+              </button>
+
+              <button onclick="deleteCreatorProduct(${p.id})">
+                Törlés
+              </button>
+            </div>
+          </div>
+        `).join('')
+        : '<p>Még nincs saját terméked.</p>'
+      }
     </div>
   `);
+}
+
+function toggleCreatorProduct(id){
+  const products=JSON.parse(
+    localStorage.getItem('vd_creator_products')||'[]'
+  );
+
+  const product=products.find(p=>p.id===id);
+
+  if(!product) return;
+
+  product.published=product.published===false;
+
+  localStorage.setItem(
+    'vd_creator_products',
+    JSON.stringify(products)
+  );
+
+  openCreatorDashboard();
+
+  toast(
+    product.published
+      ? 'Termék publikálva!'
+      : 'Termék elrejtve!'
+  );
+}
+
+function deleteCreatorProduct(id){
+  const products=JSON.parse(
+    localStorage.getItem('vd_creator_products')||'[]'
+  );
+
+  const updated=products.filter(p=>p.id!==id);
+
+  localStorage.setItem(
+    'vd_creator_products',
+    JSON.stringify(updated)
+  );
+
+  openCreatorDashboard();
+
+  toast('Termék törölve!');
+}
+
+function editCreatorProduct(id){
+  const products=JSON.parse(
+    localStorage.getItem('vd_creator_products')||'[]'
+  );
+
+  const product=products.find(p=>p.id===id);
+
+  if(!product) return;
+
+  showModal(`
+    <div class="modal-head">
+      <div>
+        <div class="eyebrow">TERMÉK SZERKESZTÉSE</div>
+        <h2>${product.title}</h2>
+      </div>
+      <button class="icon-btn" onclick="closeModal()">✕</button>
+    </div>
+
+    <form id="editProductForm" class="form">
+      <label>
+        Termék neve
+        <input name="title" value="${product.title}" required>
+      </label>
+
+      <label>
+        Ár (€)
+        <input
+          name="price"
+          type="number"
+          min="1"
+          step="0.01"
+          value="${product.price}"
+          required
+        >
+      </label>
+
+      <label>
+        Készlet (db)
+        <input
+          name="stock"
+          type="number"
+          min="0"
+          value="${product.stock}"
+          required
+        >
+      </label>
+
+      <label>
+        Kategória
+        <input
+          name="category"
+          value="${product.category||''}"
+        >
+      </label>
+
+      <button class="primary-btn" type="submit">
+        Mentés
+      </button>
+    </form>
+  `);
+
+  document
+    .querySelector('#editProductForm')
+    .addEventListener('submit',e=>{
+      e.preventDefault();
+
+      const f=new FormData(e.currentTarget);
+
+      product.title=f.get('title');
+      product.price=Number(f.get('price'));
+      product.stock=Number(f.get('stock'));
+      product.category=f.get('category');
+
+      localStorage.setItem(
+        'vd_creator_products',
+        JSON.stringify(products)
+      );
+
+      closeModal();
+      toast('Termék módosítva!');
+
+      setTimeout(
+        ()=>openCreatorDashboard(),
+        300
+      );
+    });
 }
